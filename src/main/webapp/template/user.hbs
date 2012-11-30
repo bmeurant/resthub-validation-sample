@@ -15,12 +15,12 @@
         <li><code>messages</code> option: an object map of messages keys and messages values. Values can handle names parameters with
             format: <code>{parameterName}</code> in order to provide constraint values in message. This message object is given as parameter
             of synchronize function called in model initialize function. This object is specific to the current model and overrides all others
-            messages defined in server or globally in <code>Resthub.Validation.messages</code> (see app.js).</li>
+            messages defined in server or globally in <code>Resthub.Validation.messages</code> (see app.js).
+            Message keys follow the format : <code>'validation.{constraintType}.message'</code>.</li>
         <li>The <code>addValidator</code> custom validator in app.js that map a custom BeanValidation <code>TelephoneNumber</code> in server side.</li>
         <li>The <code>confirmPassword</code> constraint validation definition in model providing, in client side only, an additional constraint
             without impact on server constraints. This mechanism allows to mix client and server side constraints definitions
-            and it is also possible to override, in client side, constraints already defined in server side.
-            Message keys follow the format : <code>'validation.{constraintType}.message'</code>.</li>
+            and it is also possible to override, in client side, constraints already defined in server side.</li>
     </ul>
     <br/>
 
