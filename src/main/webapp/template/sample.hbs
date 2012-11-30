@@ -1,0 +1,199 @@
+<div class="alerts">
+    <div class="alert fade in" style="display: none">
+        <div class="message"></div>
+    </div>
+</div>
+
+<form class="form-horizontal">
+    <legend>Exhaustive Form Validation Sample</legend>
+    This sample form allows you to see in action all supported server validations mapped in client side.
+    This shows different validation options, combined validations (NotNull and Min), etc.<br/><br/>
+    Please note : <br/>
+    <ul>
+        <li>The <code>excludes</code> option in model : an array that allows to ignore some property validation from server (i.e. <code>excludes: ['ignoredProp']</code>).</li>
+        <li><code>includes</code> option is also available. (e.g. <code>includes: ['nullValue', 'notNull', 'assertTrue', 'assertFalse', ...]</code>)</li>
+        <li>The <code>className</code> parameter in model referencing the corresponding server complete qualified class name (i.e. <code>className: 'org.resthub.validation.model.Sample'</code>).</li>
+        <li>The model <strong>must provide a specific implementation of initialize</strong> function in order to allow synchronization between server and client.
+            Should provide the model itself as synchronize function call parameter (e.g. call to <code>Resthub.Validation.synchronize(SampleModel)</code>).</li>
+        <li>The override, in app.js file, of the <code>Resthub.Validation.messages</code> object containing client customized validation messages (shared between all models).
+            Values can handle names parameters with format: <code>{parameterName}</code> in order to provide constraint values in message.
+            Message keys follow the format : <code>'validation.{constraintType}.message'</code>.</li>
+    </ul>
+    <br/>
+
+    <div class="row">
+        <div class="span6">
+
+            <div class="control-group">
+                <label for="nullValue" class="control-label">null:</label>
+
+                <div class="controls">
+                    <div class="input-prepend">
+                        <input id="nullValue" type="text" name="nullValue"/>
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="notNull" class="control-label">notNull:</label>
+
+                <div class="controls">
+                    <div class="input-prepend">
+                        <input id="notNull" type="text" name="notNull"/>
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">assertTrue:</label>
+                <div class="controls">
+                    <div class="input-prepend">
+                        <label class="radio"><input type="radio" name="assertTrue" value="true" id="assertTrue_1">True</label>
+                        <label class="radio"><input type="radio" name="assertTrue" value="false" id="assertTrue_2">False</label>
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">assertFalse:</label>
+                <div class="controls">
+                    <div class="input-prepend">
+                        <label class="radio"><input type="radio" name="assertFalse" value="true" id="assertFalse_1">True</label>
+                        <label class="radio"><input type="radio" name="assertFalse" value="false" id="assertFalse_2">False</label>
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="min" class="control-label">min:</label>
+                <div class="controls">
+                    <div class="input-prepend">
+                        <input type="text" name="min" id="min">
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="decimalMin" class="control-label">decimalMin:</label>
+                <div class="controls">
+                    <div class="input-prepend">
+                        <input type="text" name="decimalMin" id="decimalMin">
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="max" class="control-label">max:</label>
+                <div class="controls">
+                    <div class="input-prepend">
+                        <input type="text" name="max" id="max">
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="decimalMax" class="control-label">decimalMax:</label>
+                <div class="controls">
+                    <div class="input-prepend">
+                        <input type="text" name="decimalMax" id="decimalMax">
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="span6">
+
+            <div class="control-group">
+                <label for="stringSize" class="control-label">stringSize:</label>
+                <div class="controls">
+                    <div class="input-prepend">
+                        <input type="text" name="stringSize" id="stringSize">
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">collSize:</label>
+                <div class="controls">
+                    <div class="input-prepend">
+                        <label class="checkbox"><input type="checkbox" name="collSize" value="value1" />Value 1</label>
+                        <label class="checkbox"><input type="checkbox" name="collSize" value="value2" />Value 2</label>
+                            <label class="checkbox"><input type="checkbox" name="collSize" value="value3" />Value 3</label>
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="pattern" class="control-label">pattern:</label>
+                <div class="controls">
+                    <div class="input-prepend">
+                        <input type="text" name="pattern" id="pattern">
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="url" class="control-label">url:</label>
+                <div class="controls">
+                    <div class="input-prepend">
+                        <input type="text" name="url" id="url">
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="urlDefault" class="control-label">urlDefault:</label>
+                <div class="controls">
+                    <div class="input-prepend">
+                        <input type="text" name="urlDefault" id="urlDefault">
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="urlRegexp" class="control-label">urlRegexp:</label>
+                <div class="controls">
+                    <div class="input-prepend">
+                        <input type="text" name="urlRegexp" id="urlRegexp">
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="urlComplete" class="control-label">urlComplete:</label>
+                <div class="controls">
+                    <div class="input-prepend">
+                        <input type="text" name="urlComplete" id="urlComplete">
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="range" class="control-label">range:</label>
+                <div class="controls">
+                    <div class="input-prepend">
+                        <input type="text" name="range" id="range">
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <input type="submit" value="Submit" class="btn btn-primary">
+</form>

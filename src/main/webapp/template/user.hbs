@@ -1,0 +1,163 @@
+<div class="alerts">
+    <div class="alert fade in" style="display: none">
+        <div class="message"></div>
+    </div>
+</div>
+
+<form class="form-horizontal">
+    <legend>User Form Validation Sample</legend>
+    This sample form allows you to see more concrete sample based on a user model<br/>
+    This makes a particular focus on some options such as custom client side messages (allowing internationalization),
+    additional client side validation constraints or client side constraints overrides and a custom validation constraint
+    on both server and client sides.<br/><br/>
+    Please note : <br/>
+    <ul>
+        <li><code>messages</code> option: an object map of messages keys and messages values. Values can handle names parameters with
+            format: <code>{parameterName}</code> in order to provide constraint values in message. This message object is given as parameter
+            of synchronize function called in model initialize function. This object is specific to the current model and overrides all others
+            messages defined in server or globally in <code>Resthub.Validation.messages</code> (see app.js).</li>
+        <li>The <code>addValidator</code> custom validator in app.js that map a custom BeanValidation <code>TelephoneNumber</code> in server side.</li>
+        <li>The <code>confirmPassword</code> constraint validation definition in model providing, in client side only, an additional constraint
+            without impact on server constraints. This mechanism allows to mix client and server side constraints definitions
+            and it is also possible to override, in client side, constraints already defined in server side.
+            Message keys follow the format : <code>'validation.{constraintType}.message'</code>.</li>
+    </ul>
+    <br/>
+
+    <div class="row">
+        <div class="span6">
+
+            <div class="control-group">
+                <label for="login" class="control-label">login:</label>
+
+                <div class="controls">
+                    <div class="input-prepend">
+                        <input id="login" type="text" name="login"/>
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="password" class="control-label">password:</label>
+
+                <div class="controls">
+                    <div class="input-prepend">
+                        <input id="password" type="password" name="password"/>
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="confirmPassword" class="control-label">confirm password:</label>
+
+                <div class="controls">
+                    <div class="input-prepend">
+                        <input id="confirmPassword" type="password" name="confirmPassword"/>
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="email" class="control-label">email:</label>
+
+                <div class="controls">
+                    <div class="input-prepend">
+                        <input id="email" type="text" name="email"/>
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="firstName" class="control-label">first name:</label>
+
+                <div class="controls">
+                    <div class="input-prepend">
+                        <input id="firstName" type="text" name="firstName"/>
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="lastName" class="control-label">lastName:</label>
+                <div class="controls">
+                    <div class="input-prepend">
+                        <input type="text" name="lastName" id="lastName">
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="age" class="control-label">age:</label>
+                <div class="controls">
+                    <div class="input-prepend">
+                        <input class="input-mini" type="text" name="age" id="age" maxlength="3">
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="span6">
+
+            <div class="control-group">
+                <label for="webSiteURL" class="control-label">personal website:</label>
+                <div class="controls">
+                    <div class="input-prepend">
+                        <input type="text" name="webSiteURL" id="webSiteURL">
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="interests" class="control-label">interests:</label>
+                <div class="controls">
+                    <select id="interests" name="interests" multiple="multiple" size="5">
+                      <option>Javascript</option>
+                      <option>Java</option>
+                      <option>BackboneJS</option>
+                      <option>Resthub</option>
+                      <option>Spring</option>
+                    </select>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="creditCardNumber" class="control-label">credit card number:</label>
+                <div class="controls">
+                    <div class="input-prepend">
+                        <input type="text" name="creditCardNumber" id="creditCardNumber" maxlength="16">
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="telephoneNumber" class="control-label">telephone number:</label>
+                <div class="controls">
+                    <div class="input-prepend">
+                        <input type="text" name="telephoneNumber" id="telephoneNumber">
+                    </div>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="controls">
+                    <label class="checkbox"><input type="checkbox" name="cgaAccepted" value="true" />I accept General terms of sale</label>
+                    <span class="help-inline"></span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <input type="submit" value="Submit" class="btn btn-primary">
+</form>
