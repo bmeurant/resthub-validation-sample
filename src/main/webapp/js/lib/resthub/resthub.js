@@ -279,14 +279,14 @@ define(['underscore', 'backbone', 'pubsub', 'lib/resthub/jquery-event-destroyed'
         };
 
         ResthubValidation.urlValidator = function (value, protocol, host, port, regexp, msg) {
-            if (!_.isString(value) || !value.match(ResthubValidation.urlPattern)) {
+            if (!_.isString(value) || !value.match(ResthubValidation.options.urlPattern)) {
                 return msg;
             }
             if (regexp && !value.match(regexp)) {
                 return msg;
             }
 
-            var urlParts = value.match(ResthubValidation.urlParser);
+            var urlParts = value.match(ResthubValidation.options.urlParser);
             var protocolValue = urlParts[2];
 
             if (protocol && protocol != protocolValue) {
@@ -295,6 +295,7 @@ define(['underscore', 'backbone', 'pubsub', 'lib/resthub/jquery-event-destroyed'
 
             if (host || port != -1) {
                 var hostValue = urlParts[4];
+                if (!hostValue) return msg;
                 var indexOfPort = hostValue.indexOf(':');
                 if (indexOfPort > -1) {
                     var portValue = hostValue.substring(indexOfPort + 1);
