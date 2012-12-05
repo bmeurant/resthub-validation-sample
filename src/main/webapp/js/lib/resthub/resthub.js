@@ -7,13 +7,13 @@ define(['underscore', 'backbone', 'pubsub', 'lib/resthub/jquery-event-destroyed'
         var ResthubValidation = {};
 
         // store the list of already synchronized models class names
-        var synchronized = [];
+        var synchronized = {};
 
         // locale initialization
         var locale = window.navigator.language || window.navigator.userLanguage;
 
         // is locale changed ?
-        var localeChanged;
+        var localeChanged = false;
 
         ResthubValidation.options = {
             // server url for the web service exporting validation constraints
@@ -31,8 +31,8 @@ define(['underscore', 'backbone', 'pubsub', 'lib/resthub/jquery-event-destroyed'
         // Function to be called by end user once the locale changed on client.
         // set the current locale and a flag
         ResthubValidation.locale = function(loc) {
+            if (loc != locale) {localeChanged = true};
             locale = loc;
-            localeChanged = true;
         };
 
         // Constructs the array of validation constraints in Backbone Validation format
@@ -82,15 +82,17 @@ define(['underscore', 'backbone', 'pubsub', 'lib/resthub/jquery-event-destroyed'
                     }
                 }
 
-                // Manage requirements because, by default, any expressed constraint in
-                // Backbone Validation implies a requirement to true.
-                // To manage a constraint with a requirement to false, we add a required false
-                // constraint to the current property if no true requirement was originally expressed
-                if (!required) {
-                    prop.push({required: false});
-                }
+                if (constraint) {
+                    // Manage requirements because, by default, any expressed constraint in
+                    // Backbone Validation implies a requirement to true.
+                    // To manage a constraint with a requirement to false, we add a required false
+                    // constraint to the current property if no true requirement was originally expressed
+                    if (!required) {
+                        prop.push({required: false});
+                    }
 
-                validation[propKey] = prop;
+                    validation[propKey] = prop;
+                }
             }
 
             // Set the built validation constraint to the current model but also save the original client
@@ -378,11 +380,15 @@ define(['underscore', 'backbone', 'pubsub', 'lib/resthub/jquery-event-destroyed'
 
         // retrieves validation constraints from server from the given model and considering
         // the client side defined messages
-        ResthubValidation.synchronize = function(model, messages) {
+        ResthubValidation.synchronize = function(model, messages, errorCallback) {
             // perform effective synchronization by sending a REST GET request
             // only if the current model was not already synchronized or if the client
             // locale changed
-            if (localeChanged || !synchronized[model.prototype.className]) {
+            if (localeChanged) {
+                localeChanged = false;
+                synchronized = {};
+            }
+            if (!synchronized[model.prototype.className]) {
                 // if any, re-populate validation constraints with original client side
                 // expressed constraints (used in case of re-build when the first client
                 // side validation array was already overrided)
@@ -390,16 +396,23 @@ define(['underscore', 'backbone', 'pubsub', 'lib/resthub/jquery-event-destroyed'
                     model.prototype.validation = model.prototype.originalValidation;
                 }
 
-                synchronized[model.prototype.className] = true;
-
                 var msgs = {};
 
                 $.get(ResthubValidation.options.url + '/' + model.prototype.className, {locale: locale})
                     .success(_.bind(function(resp) {
-                    buildValidation(resp, model, _.extend(msgs, ResthubValidation.messages, messages))
-                }, this));
+                        buildValidation(resp, model, _.extend(msgs, ResthubValidation.messages, messages));
+                        synchronized[model.prototype.className] = true;
+                    }, this))
+                    .error(function (resp) {
+                        if (errorCallback) errorCallback(resp);
+                        else ResthubValidation.options.errorCallback(resp);
+                    });
             }
-        }
+        };
+
+        ResthubValidation.options.errorCallback = function (resp) {
+            console.error("error calling server : status code " + resp.status + " and text '" + resp.statusText + "'");
+        };
 
         return ResthubValidation;
 
