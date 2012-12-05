@@ -1,9 +1,9 @@
 define(['router/app-router', 'resthub'], function(AppRouter, Resthub) {
 
-    Resthub.Validation.addValidator('TelephoneNumber', function(constraint) {
+    Resthub.Validation.addValidator('TelephoneNumber', function(constraint, msg) {
         return {
             pattern: '^[+]?([0-9]*[\\.\\s\\-\\(\\)]|[0-9]+){3,24}$',
-            msg: constraint.message
+            msg: msg
         };
     });
 
