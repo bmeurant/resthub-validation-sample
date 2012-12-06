@@ -9,9 +9,9 @@ This application shows two sample forms using this extension :
 
  * One exhaustive 'Sample' form containing all supported validation constraints and demonstrating some advanced options:
    includes / excludes, global custom validation messages and its format, custom validator and merge of client and server constraints
- * One more concrete 'User' form containg more coherent validation constraint and demonstrating other advanced options:
+ * One more concrete 'User' form containing more coherent validation constraint and demonstrating other advanced options:
    customization of messages in model, custom validator implementation (on both server and client side) and definition
-   of an aditional client only validation constraint.
+   of an additional client only validation constraint.
 
 In order to run it :
 
