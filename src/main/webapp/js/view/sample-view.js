@@ -11,7 +11,7 @@ function (Backbone, Resthub, Sample, sampleTemplate) {
         },
 
         initialize: function() {
-          // Initialize the collection
+          // Initialize the model
           this.model = new Sample();
 
           Backbone.Validation.bind(this);

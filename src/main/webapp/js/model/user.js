@@ -7,8 +7,8 @@ define(['backbone', 'resthub'], function(Backbone, Resthub) {
           'validation.NotNull.message': 'should not be null'
         },
 
-        initialize: function () {
-            Resthub.Validation.synchronize(UserModel, this.messages);
+        initialize: function (attributes, options) {
+            Resthub.Validation.synchronize(UserModel, options.errorCallback);
         },
 
         validation: {
@@ -16,7 +16,6 @@ define(['backbone', 'resthub'], function(Backbone, Resthub) {
                 equalTo: 'password'
             }
         }
-
     });
     return UserModel;
 });

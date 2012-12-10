@@ -1,5 +1,5 @@
-define([ 'backbone', 'resthub', 'model/user', 'hbs!template/user', 'backbone-validation'],
-function (Backbone, Resthub, User, userTemplate) {
+define([ 'backbone', 'underscore', 'resthub', 'model/user', 'hbs!template/user', 'backbone-validation'],
+function (Backbone, _, Resthub, User, userTemplate) {
 
     var UserView = Resthub.View.extend({
 
@@ -11,8 +11,8 @@ function (Backbone, Resthub, User, userTemplate) {
         },
 
         initialize: function() {
-          // Initialize the collection
-          this.model = new User();
+          // Initialize the model
+          this.model = new User({}, {errorCallback: _.bind(this.showError)});
 
           Backbone.Validation.bind(this);
 
@@ -26,6 +26,14 @@ function (Backbone, Resthub, User, userTemplate) {
             }
 
             this.save();
+        },
+
+        showError: function (resp) {
+            this.$('.alerts .alert').removeClass('alert-success') ;
+            this.$('.alerts .alert').addClass('alert-error');
+            this.$('.alerts .alert .message').text('Error occurred: ' + resp.status + ': ' + resp.statusText + ' !');
+
+            this.$('.alerts .alert').show();
         },
 
         save: function() {
