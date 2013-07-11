@@ -151,7 +151,7 @@
 	text-decoration: none;
 }
 
-/*** Test Counts */
+/*** AbtractModel Counts */
 
 #qunit-tests b.counts                       { color: black; }
 #qunit-tests b.passed                       { color: #5E740B; }

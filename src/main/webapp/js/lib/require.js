@@ -1441,7 +1441,7 @@ var requirejs, require, define;
                 }
 
                 //Callback require. Normalize args. if callback or errback is
-                //not a function, it means it is a relMap. Test errback first.
+                //not a function, it means it is a relMap. AbtractModel errback first.
                 if (errback && !isFunction(errback)) {
                     relMap = errback;
                     errback = undefined;
@@ -1830,7 +1830,7 @@ var requirejs, require, define;
             node.setAttribute('data-requirecontext', context.contextName);
             node.setAttribute('data-requiremodule', moduleName);
 
-            //Set up load listener. Test attachEvent first because IE9 has
+            //Set up load listener. AbtractModel attachEvent first because IE9 has
             //a subtle issue in its addEventListener and script onload firings
             //that do not match the behavior of all other browsers with
             //addEventListener support, which fire the onload event for a

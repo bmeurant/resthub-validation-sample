@@ -1,6 +1,12 @@
-define(['underscore', 'backbone', 'pubsub', 'lib/resthub/jquery-event-destroyed'], function(_, Backbone, PubSub) {
+// RESThub Backbone stack 2.1.2
+define(['underscore', 'backbone', 'jquery', 'lib/resthub/jquery-event-destroyed'], function(_, Backbone, $) {
 
     var Resthub = { };
+
+    // Avoid GET caching issues with Internet Explorer
+    if (XMLHttpRequest) {
+        $.ajaxSetup({ cache: false });
+    }
 
     Resthub.Validation = (function() {
 
@@ -251,10 +257,16 @@ define(['underscore', 'backbone', 'pubsub', 'lib/resthub/jquery-event-destroyed'
         var constraintMessage = function(propKey, constraint, messages) {
             var msg = constraint.message;
 
+            var msgPropKey = 'validation.' + propKey + '.' +  constraint.type + '.message';
             var msgKey = 'validation.' + constraint.type + '.message';
 
-            if (messages && messages[msgKey]) {
-                msg = messages[msgKey];
+            if (messages) {
+
+                if (messages[msgPropKey]) {
+                    msg = messages[msgPropKey];
+                } else if (messages[msgKey]) {
+                    msg = messages[msgKey];
+                }
 
                 for (var p in constraint) {
                     msg = msg.replace(new RegExp('{' + p + '}', 'g'), constraint[p]);
@@ -383,7 +395,7 @@ define(['underscore', 'backbone', 'pubsub', 'lib/resthub/jquery-event-destroyed'
             };
 
         // retrieves validation constraints from server
-        ResthubValidation.synchronize = function(model, errorCallback) {
+        ResthubValidation.synchronize = function(model, errorCallback, successCallback) {
 
             // perform effective synchronization by sending a REST GET request
             // only if the current model was not already synchronized or if the client
@@ -401,10 +413,11 @@ define(['underscore', 'backbone', 'pubsub', 'lib/resthub/jquery-event-destroyed'
                 }
 
                 var msgs = {};
-                $.get(ResthubValidation.options.apiUrl + '/' + model.prototype.className, {locale: locale})
+                $.getJSON(ResthubValidation.options.apiUrl + '/' + model.prototype.className, {locale: locale})
                     .success(_.bind(function(resp) {
                         buildValidation(resp, model, _.extend(msgs, ResthubValidation.messages, model.prototype.messages));
                         synchronizedClasses[model.prototype.className] = true;
+                        if (successCallback && _.isFunction(successCallback)) successCallback();
                     }, this))
                     .error(function (resp) {
                         if (errorCallback && _.isFunction(errorCallback)) errorCallback(resp);
@@ -528,24 +541,13 @@ define(['underscore', 'backbone', 'pubsub', 'lib/resthub/jquery-event-destroyed'
         delegateEvents: function(events) {
 
             Resthub.View.__super__.delegateEvents.call(this, events);
-            this._eventsSubscriptions = [];
-
             if (!(events || (events = getValue(this, 'events')))) return;
             _.each(events, _.bind(function(method, key) {
                 if (key.indexOf(this.globalEventsIdentifier) != 0) return;
                 if (!_.isFunction(method)) method = this[method];
                 if (!method) throw new Error('Method "' + key + '" does not exist');
-                PubSub.on(key, method, this);
-                this._eventsSubscriptions.push(key);
+                this.listenTo(Backbone, key, method);
             }, this));
-        },
-
-        undelegateEvents: function() {
-
-            if (this._eventsSubscriptions && this._eventsSubscriptions.length > 0) {
-                PubSub.off(this._eventsSubscriptions.join(' '), null, this);
-            }
-            Resthub.View.__super__.undelegateEvents.call(this);
         },
 
         // Override backbone setElement to bind a destroyed special event
@@ -558,45 +560,32 @@ define(['underscore', 'backbone', 'pubsub', 'lib/resthub/jquery-event-destroyed'
                 this._insertRoot();
             }
 
-            var self = this;
-            // call backbone dispose method on el DOM removing
-            this.$el.on("destroyed", function() {
-                self.dispose();
-            });
+            // call backbone stopListening method on el DOM removing
+            this.$el.on("destroyed", _.bind(this._destroy, this));
 
             return this;
+        },
+
+        _destroy: function() {
+            // Trigger destroy event on the view
+            this.trigger("destroy");
+            this.stopListening();
         },
 
         // Override Backbone method unbind destroyed special event
-        // after remove : this prevents dispose to be called twice
+        // after remove : this prevents stopListening to be called twice
         remove: function() {
             this.$el.off("destroyed");
+            // Trigger destroy event on the view
+            this.trigger("destroy");
             Resthub.View.__super__.remove.call(this);
-            var self = this;
-            // call backbone dispose method on el DOM removing
-            this.$el.on("destroyed", function() {
-                self.dispose();
-            });
         },
 
-        // Override Backbone dispose method to unbind Backbone Validation
-        // Bindings if defined
-        dispose: function() {
-
-            // perform actions before effective close
-            this.onDispose();
-
-            Resthub.View.__super__.dispose.call(this);
-            PubSub.off(null, null, this);
-
+        stopListening: function() {
+            Resthub.View.__super__.stopListening.call(this);
             if (Backbone.Validation) {
                 Backbone.Validation.unbind(this);
             }
-
-            return this;
-        },
-
-        onDispose: function() {
             return this;
         },
 
@@ -621,7 +610,7 @@ define(['underscore', 'backbone', 'pubsub', 'lib/resthub/jquery-event-destroyed'
 
                 // specific test for radio to get only checked option or null is no option checked
                 if ($this.is(':radio')) {
-                    if ($this.attr('checked')) {
+                    if ($this.is(':checked')) {
                         attributes[name] = $this.val();
                     } else if (!attributes[name]) {
                         attributes[name] = null;
@@ -632,6 +621,9 @@ define(['underscore', 'backbone', 'pubsub', 'lib/resthub/jquery-event-destroyed'
                         var checkboxes = form.find("input[type='checkbox'][name='" + name + "']");
                         if (checkboxes.length > 1) {
                             attributes[name] = [];
+                        }
+                        else if (checkboxes.length === 1) {
+                            attributes[name] = "false";
                         }
                     }
                     if ($this.is(':checked')) {
@@ -647,8 +639,7 @@ define(['underscore', 'backbone', 'pubsub', 'lib/resthub/jquery-event-destroyed'
             });
 
             if (model) {
-                model.set(attributes, {silent: true});
-                model.set({});
+                model.set(attributes, {validate: true});
             }
         }
 
@@ -670,7 +661,7 @@ define(['underscore', 'backbone', 'pubsub', 'lib/resthub/jquery-event-destroyed'
 
             if (options && options.pushState) {
                 // force all links to be handled by Backbone pushstate - no get will be send to server
-                $(window.document).on('click', 'a:not([data-bypass])', function(evt) {
+                $(window.document).on('click', 'a[href]:not([data-bypass])', function(evt) {
 
                     var protocol = this.protocol + '//';
                     var href = this.href;
